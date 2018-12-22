@@ -1,0 +1,267 @@
+---
+title: "Stats 506, F18, Problem Set 3"
+author: "Ruirui Zhang, ruiruiz@umich.edu"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+# 80: --------------------------------------------------------------------------
+#! We generally don't need to see the code in the results document.
+knitr::opts_chunk$set(echo = FALSE)
+
+#! Make sure all chunks have a label. This one is labelled 'setup'.
+setwd("C:/Users/zhang/Desktop/UMich F18/STATS 506/HW3/ReviseQ1")
+
+# load packages
+if (!require("knitr")) {
+  install.packages('knitr')
+  library("knitr")
+}
+
+if (!require("kableExtra")) {
+  install.packages('kableExtra')
+  library("kableExtra")
+}
+```
+
+### Question 1: 
+First, repeat question 3 parts a-c from problem set 1 using data.table for all computations and data manipulations.
+
+Then, formulate and state a question answerable using the RECS data. Your question should be similar in scope to (one of) parts a-c above and should rely on one or more variables not previously used. Answer your question (using data.table) and provide supporting evidence in the form of nicely formatted graphs and/or tables.
+
+```{R Load File Q1, include=FALSE}
+source(file = "ps3_q1.R")
+```
+
+### Question 1-a:
+### Question 3a:
+What percent of homes have stucco construction as the major outside wall material within each division? Which division has the highest proportion? Which the lowest?
+
+### Answer 1-a:
+```{R Q1a, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Proportion of homes with stucco construction within each census division in 2015. Estimates are based on the residential energy consumption survey.'
+
+
+p_OW4_summary[order(-p_OW4),
+           .(`Census Division` = `DIVISION(name)`,
+             `% Stucco Homes (95% CI)` = sprintf('%4.1f%% (%4.1f, %4.1f)',
+                                                100*p_OW4, 100*p_OW4_lower, 100*p_OW4_upper)
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+
+
+# ggplot 
+cap = ' Estimated percent of homes within each census division with major wall type of stucco.'
+
+ggplot(data = p_OW4_summary,aes(x=`DIVISION(name)`, 
+                                y=p_OW4,
+                                fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=p_OW4_lower, 
+                  ymax=p_OW4_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Percentage of homes have stucco construction as the major outside wall material") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+```
+
+
+### Question 1-b:
+What is average total electricity usage in kilowatt hours in each division? Answer the same question stratified by urban and rural status.
+
+### Answer 1-b:
+
+```{R Q1b all, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Average annual electricity utilization by Census Division in kwh/home.'
+
+pwc = function(x) format(round(x), big.mark = ',')
+
+kwh_summary[order(-theta),
+           .(`Census Division` = `DIVISION(name)`,
+             `Average total electricity usage(95% CI)` = 
+               sprintf('%s (%s, %s)',
+               pwc(100*theta), pwc(100*theta_lower), pwc(100*theta_upper))
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+# ggplot 
+ggplot(data = kwh_summary,aes(x=`DIVISION(name)`, 
+                                y=theta,
+                                fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=theta_lower, 
+                  ymax=theta_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Estimated average annual electricity usage in khw/home by divisions") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+
+```
+
+```{R Q1b rural, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Average annual electricity utilization by Census Division in kwh/home for rural areas.'
+
+pwc = function(x) format(round(x), big.mark = ',')
+
+kwh_rural_summary[order(-theta),
+           .(`Census Division` = `DIVISION(name)`,
+             `Average total electricity usage(95% CI)` = 
+               sprintf('%s (%s, %s)',
+               pwc(100*theta), pwc(100*theta_lower), pwc(100*theta_upper))
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+# ggplot 
+ggplot(data = kwh_rural_summary,aes(x=`DIVISION(name)`, 
+                                    y=theta,
+                                    fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=theta_lower, 
+                  ymax=theta_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Estimated average annual electricity usage in khw/home by divisions (rural)") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+
+```
+
+```{R Q1b urban, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Average annual electricity utilization by Census Division in kwh/home for urban areas.'
+
+pwc = function(x) format(round(x), big.mark = ',')
+
+kwh_urban_summary[order(-theta),
+           .(`Census Division` = `DIVISION(name)`,
+             `Average total electricity usage(95% CI)` = 
+               sprintf('%s (%s, %s)',
+               pwc(100*theta), pwc(100*theta_lower), pwc(100*theta_upper))
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+# ggplot 
+ggplot(data = kwh_urban_summary,aes(x=`DIVISION(name)`, 
+                                    y=theta,
+                                    fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=theta_lower, 
+                  ymax=theta_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Estimated average annual electricity usage in khw/home by divisions (urban)") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+```
+
+### Question 1c
+Which division has the largest disparity between urban and rural areas in terms of the proportion of homes with Internet access?
+
+### Answer 1c:
+
+
+```{R Q1c, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Urban and rural disparity in internet access for the ten US Census Division in 2015.'
+
+
+INET_diff_summary[order(-theta),
+           .(`Census Division` = `DIVISION(name)`,
+             `Average total electricity usage(95% CI)` = 
+               sprintf('%4.1f%% (%4.1f, %4.1f)',
+               100*theta, 100*theta_lower, 100*theta_upper)
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+# ggplot 
+ggplot(data = INET_diff_summary,aes(x=`DIVISION(name)`, 
+                                y=theta,
+                                fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=theta_lower, 
+                  ymax=theta_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Urban and rural disparity in internet access (by Division)") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+```
+
+### Question 1d:
+Formulate and state a question answerable using the RECS data. Your question should be similar in scope to (one of) parts a-c above and should rely on one or more variables not previously used. 
+Answer your question(using data.table) and provide supporting evidence in the form of nicely formatted graphs and/or tables. 
+
+### Answer 1d:
+Question: 
+
+Which division has the largest disparity between urban and rural areas in terms of the proportion of having laptop at home?
+
+Answer:
+
+```{R Q1d, include = TRUE, eval = TRUE}
+# talbe
+caption = 'Urban and rural disparity in having laptop at home for the ten US Census Division in 2015.'
+
+
+LAPT_diff_summary[order(-theta),
+           .(`Census Division` = `DIVISION(name)`,
+             `Average total electricity usage(95% CI)` = 
+               sprintf('%4.1f%% (%4.1f, %4.1f)',
+               100*theta, 100*theta_lower, 100*theta_upper)
+            )] %>%
+  knitr::kable( align = 'r', caption = caption, digits = 3) %>%
+    kable_styling(full_width = TRUE) 
+
+# ggplot 
+ggplot(data = LAPT_diff_summary,aes(x=`DIVISION(name)`, 
+                                y=theta,
+                                fill = "pink")) + 
+geom_bar(position=position_dodge(), stat="identity") +
+geom_errorbar(aes(ymin=theta_lower, 
+                  ymax=theta_upper),
+              width=.2,                    # Width of the error bars
+              position=position_dodge(.9))+
+ggtitle("Urban and rural disparity in laplot (by Division)") +
+xlab("Division") +
+ylab("Percentage of homes") +
+scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+               breaks=c("OJ", "VC"),
+               labels=c("Orange juice", "Ascorbic acid")) +
+theme( axis.text.x = element_text(size = 8, angle = 90))
+```
+
+
