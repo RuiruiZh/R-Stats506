@@ -1,0 +1,343 @@
+---
+title: "Stats 506, F18, Problem Set 1"
+author: "Ruirui Zhang, ruiruiz@umich.edu"
+date: "`r format.Date(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+# 80: --------------------------------------------------------------------------
+#! We generally don't need to see the code in the results document.
+knitr::opts_chunk$set(echo = FALSE)
+#! Make sure all chunks have a label. This one is labelled 'setup'.
+setwd("C:/Users/zhang/Desktop/UMich F18/STATS 506/HW1")
+```
+
+## Question 2: 
+
+```{R Load File Q2, include=FALSE}
+source(file = "ps1_q2.R")
+```
+
+### Question 2a: 
+Which airlines were responsible for at least 1% of the flights departing any of the three NYC airports between January 1 and October 31, 2013?
+
+```{R Table for Q2a}
+cap_title = '**Table 1.** *List of airlines responsible for at least 1% of the flights departing any of the three NYC airports between January 1 and October 31, 2013.*'
+# cap_text0 = 'Each row shows ...'
+cap_text1 = 'Rows are sorted by the airline code'
+cap = paste(cap_title, cap_text1)
+
+knitr::kable(carrier_fly_NYC_Oct13_0.01, 
+             col.names = c("Airline Code", "Full Name"),  
+             caption=cap)
+```
+
+
+### Question 2b: 
+Among the airlines from part "a", compare the number and percent of annual flights in the first 10 months of 2013 and the first 10 months of 2014. Your table should include: the airline name (not carrier code), a nicely formatted number (see format()), percents for each year with 95% CI, and change in percent with 95% CI. Which airlines showed the largest increase and decrease? Why do some airlines show an increase in the percent of flights but a decrease in the number of flights?
+
+**Delta Air Lines Inc.** showed the **largest increase** (2.18%). 
+
+**Endeavor Air Inc.** showed the **largest decrease** in the number of flights, which is 5.41% (No flights in 2014).
+
+Because the total number of flights departured from NYC was decreased in 2014 (from 2013), some airlines show an increase in the percent of flights but a decrease in the number of flights, inclusing American Airlines Inc., JetBlue Airways, United Air Lines Inc., and US Airways Inc.
+
+
+```{R Table for Q2b}
+
+cap_title = '**Table 2.** *Comparison of the number and percent of annual flights in the first 10 months of 2013 and the first 10 months of 2014.*'
+cap_text0 = 'Each row shows one airline from part "a".'
+cap_text1 = 'Rows are sorted by the airline name.'
+cap = paste(cap_title, cap_text0, cap_text1)
+
+knitr::kable(cbind(carrier_fly_Summary_Final[,1:2],
+                   carrier_fly_Summary_Final[,3:5]*100,
+                   "Number of Flights in 2014" = carrier_fly_Summary_Final[,6],
+                   carrier_fly_Summary_Final[,7:12]*100), 
+             digits=3, 
+             caption=cap,
+             row.names = NA)
+```
+
+### Question 2c: 
+Among of the three NYC airports, produce a table showing the percent of flights each airline is responsible for. Limit the table to the airlines identified in part a and include confidence intervals for your estimates. Which airline is the largest carrier at each airport?
+
+Tables below show percent of flights in each of three NYC airport each airline is responsible for, based on data from **Jan.1 to Oct. 31 2014**. We have included **airlines selected in part "a"** only, except Endeavor Air Inc.. This is becasue there is **no flights carried by Endeavor Air Inc. in 2014** according to data. 
+
+Largest carrier at **JFK**: JetBlue Airways
+
+Largest carrier at **EWR**: United Air Lines Inc.
+
+Largest carrier at **LGA**: Delta Air Lines Inc.
+ 
+```{R Table for Q2c}
+
+cap_title = '**Table 3.1.** *Percent of flights in JFK airport each airline is responsible for. *'
+cap_text0 = 'Each row shows one airline from part "a".'
+cap_text1 = 'Rows are sorted by the airline name.'
+cap = paste(cap_title, cap_text0, cap_text1)
+
+knitr::kable(table_JFK*100, 
+             digits=3, 
+             caption=cap,
+             col.names = c("Percent of flight from JFK", 
+                           "95% CI for percentage (upper)",
+                           "95% CI for percentage (lower)"))
+
+cap_title = '**Table 3.2.** *Percent of flights in EWR airport each airline is responsible for. *'
+cap_text0 = 'Each row shows one airline from part "a".'
+cap_text1 = 'Rows are sorted by the airline name.'
+cap = paste(cap_title, cap_text0, cap_text1)
+
+knitr::kable(table_EWR*100, 
+             digits=3, 
+             caption=cap,
+             col.names = c("Percent of flight form EWR", 
+                           "95% CI for percentage (upper)",
+                           "95% CI for percentage (lower)"))
+
+
+cap_title = '**Table 3.3.** *Percent of flights in LGA airport each airline is responsible for. *'
+cap_text0 = 'Each row shows one airline from part "a".'
+cap_text1 = 'Rows are sorted by the airline name.'
+cap = paste(cap_title, cap_text0, cap_text1)
+
+knitr::kable(table_LGA*100, 
+             digits=3, 
+             caption=cap,
+             col.names = c("Percent of flight form LGA", 
+                           "95% CI for percentage (upper)",
+                           "95% CI for percentage (lower)"))
+
+```
+
+
+
+\pagebreak
+
+```{R  Load File Q3 , include=FALSE}
+source(file = "ps1_q3.R")
+```
+
+### Question 3a:
+What percent of homes have stucco construction as the major outside wall material within each division? Which division has the highest proportion? Which the lowest?
+
+```{R Table for Q3a}
+
+cap_title = '**Table 4** *Summary of the percent of homes have stucco construction as the major outside wall material within each division.*'
+cap_text0 = 'Each row shows a different division.'
+cap = paste(cap_title, cap_text0)
+
+knitr::kable(recs15_Public_OW4_summary*100, 
+             digits=3, 
+             caption=cap,
+             row.names = NA,
+             col.names = c("Percent of homes",
+                           "95 CI (Lower)",
+                           "95 CI (Upeer)"))
+```
+
+```{r plot for Q3a, echo=FALSE, fig.height=4, fig.cap = cap}
+# 80: --------------------------------------------------------------------------
+#! Captions are an execption to the 80 character limit.
+cap = "*Plot.a1* This plot shows the percent of homes have stucco construction as the major outside wall material."
+
+ggplot(data = NULL,aes(x=label_DIVISION, 
+                         y=recs15_Public_OW4_summary[,1],
+                         fill = "pink")) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=recs15_Public_OW4_summary[,2], 
+                    ymax=recs15_Public_OW4_summary[,3]),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9))+
+  ggtitle("Percentage of homes have stucco construction as the major outside wall material") +
+  xlab("Division") +
+  ylab("Percentage of homes") +
+  scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+                 breaks=c("OJ", "VC"),
+                 labels=c("Orange juice", "Ascorbic acid")) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+
+
+### Question 3b:
+What is average total electricity usage in kilowatt hours in each division? Answer the same question stratified by urban and rural status.
+
+```{R Table for Q3b}
+
+cap_title = '**Table 5.1** *Summary of average total electricity usage in kilowatt hours in each division.*'
+cap_text0 = 'Each row shows a different division.'
+cap = paste(cap_title, cap_text0)
+
+knitr::kable(recs15_Public_electr_summary,
+             digits=3,
+             caption=cap,
+             row.names = NA,
+             col.names = c("Average total electricity usage (all)",
+                           "95% CI (Lower)",
+                           "95% CI (Upeer)"))
+
+cap_title = '**Table 5.2** *Summary of average total electricity usage in kilowatt hours in each division, for rural status only.*'
+cap_text0 = 'Each row shows a different division.'
+cap = paste(cap_title, cap_text0)
+
+knitr::kable(recs15_Public_electr_rural_summary, 
+             digits=3, 
+             caption=cap,
+             row.names = NA,
+             col.names = c("Average total electricity usage (rural)",
+                           "95% CI (Lower)",
+                           "95% CI (Upeer)"))
+
+cap_title = '**Table 5.3** *Summary of average total electricity usage in kilowatt hours in each division, for urban status only.*'
+cap_text0 = 'Each row shows a different division.'
+cap = paste(cap_title, cap_text0)
+
+knitr::kable(recs15_Public_electr_urban_summary, 
+             digits=3, 
+             caption=cap,
+             row.names = NA,
+             col.names = c("Average total electricity usage (urban)",
+                           "95% CI (Lower)",
+                           "95% CI (Upeer)"))
+```
+
+
+```{r Plot for Q3b1, echo=FALSE, fig.height=4, fig.cap = cap}
+# 80: --------------------------------------------------------------------------
+#! Captions are an execption to the 80 character limit.
+
+# give_plot: all
+
+cap = "*Plot.b1* This plot shows the average total electricity usage in kilowatt hours by division, for all status."
+
+  ggplot(data = NULL,aes(x=label_DIVISION, 
+                         y=recs15_Public_electr_summary[,1],
+                         fill = "pink")) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=recs15_Public_electr_summary[,2], 
+                    ymax=recs15_Public_electr_summary[,3]),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9))+
+  ggtitle("Average total electricity usage in kilowatt hours (All)") +
+  xlab("Division") +
+  ylab("Average total electricity usage in kilowatt hours") +
+  scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+                 breaks=c("OJ", "VC"),
+                 labels=c("Orange juice", "Ascorbic acid"))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+
+
+```{r Plot for Q3b2, echo=FALSE, fig.height=4, fig.cap = cap}
+# 80: --------------------------------------------------------------------------
+#! Captions are an execption to the 80 character limit.
+
+# give_plot: rural
+cap = "*Plot.b2* This plot shows the average total electricity usage in kilowatt hours by division, for rural status."
+
+ggplot(data = NULL,aes(x=label_DIVISION, 
+                         y=recs15_Public_electr_rural_summary[,1],
+                         fill = "pink")) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=recs15_Public_electr_rural_summary[,2], 
+                    ymax=recs15_Public_electr_rural_summary[,3]),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9))+
+  ggtitle("Average total electricity usage in kilowatt hours in rural areas") +
+  xlab("Division") +
+  ylab("Average total electricity usage in kilowatt hours") +
+  scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+                 breaks=c("OJ", "VC"),
+                 labels=c("Orange juice", "Ascorbic acid"))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ 
+
+```
+
+
+```{r Plot for Q3b3, echo=FALSE, fig.height=4, fig.cap = cap}
+# 80: --------------------------------------------------------------------------
+#! Captions are an execption to the 80 character limit.
+
+# give_plot: urban
+cap = "*Plot.b3* This plot shows the average total electricity usage in kilowatt hours by division, for urban status."
+
+  ggplot(data = NULL,aes(x=label_DIVISION, 
+                         y=recs15_Public_electr_urban_summary[,1],
+                         fill = "pink")) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=recs15_Public_electr_urban_summary[,2], 
+                    ymax=recs15_Public_electr_urban_summary[,3]),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9))+
+  ggtitle("Average total electricity usage in kilowatt hours in urban areas") +
+  xlab("Division") +
+  ylab("Average total electricity usage in kilowatt hours") +
+  scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+                 breaks=c("OJ", "VC"),
+                 labels=c("Orange juice", "Ascorbic acid"))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ 
+
+
+```
+
+
+### Question 3c:
+Which division has the largest disparity between urban and rural areas in terms of the proportion of homes with internet access?
+
+**West Sourth Central** is the division has the largest disparity between urban and rural areas in terms of the proportion of homes with internet access.
+
+```{R Table for Q3c}
+
+cap_title = '**Table 3c** *Summary of the difference between urban and rural areas in terms of proportion of homes with internet access.*'
+cap_text0 = 'Each row shows a different division.'
+cap = paste(cap_title, cap_text0)
+
+knitr::kable(recs15_Public_INET_summary*100, 
+             digits=3, 
+             caption=cap,
+             row.names = NA,
+             col.names = c("Difference in proportion (rural and urban) ",
+                           "95% CI (Lower)",
+                           "95% CI (Upeer)"))
+```
+
+
+
+```{r plot for Q3c, echo=FALSE, fig.height=4, fig.cap = cap}
+# 80: --------------------------------------------------------------------------
+#! Captions are an execption to the 80 character limit.
+cap = "*Plot.c1* Difference between urban and rural areas in terms of the proportion of homes with internet access."
+# give_plot
+
+
+ggplot(data = NULL,aes(x=label_DIVISION, 
+           y=recs15_Public_INET_summary[,1],
+           fill = "pink")) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=recs15_Public_INET_summary[,2], 
+                    ymax=recs15_Public_INET_summary[,3]),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9))+
+  ggtitle("Disparity in proportion of homes with internet access (urban vs rural)") +
+  xlab("Division") +
+  ylab("Disparity between urban and rural") +
+  scale_fill_hue(name="Supplement type", # Legend label, use darker colors
+                 breaks=c("OJ", "VC"),
+                 labels=c("Orange juice", "Ascorbic acid")) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+
+
