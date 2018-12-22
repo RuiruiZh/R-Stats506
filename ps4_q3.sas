@@ -1,8 +1,4 @@
 /* import data */
-/*
-proc import datafile = '/afs/umich.edu/user/r/u/ruiruiz/Stats506/ps4/ps4_q3/2016MPUPhead.csv' out = MPUP; 
-*/
-
 proc import datafile = '/afs/umich.edu/user/r/u/ruiruiz/Stats506/ps4/ps4_q3/Medicare_Provider_Utilization_and_Payment_Data__Physician_and_Other_Supplier_PUF_CY2016.csv' 
 out = MPUP;
 
@@ -83,18 +79,6 @@ run;
 PROC EXPORT DATA = MPUP_MRI7_SUMMARY_N 
 OUTFILE= '/afs/umich.edu/user/r/u/ruiruiz/Stats506/ps4/ps4_q3/ps4_q3c.CSV';
 RUN;
-
-
-/* export as xlsx */
-ods tagsets.excelxp file="MPUP_MRI7_SUMMARY.xlsx" style=htmlblue options(sheet_name="VOLUME");
-proc print data=MPUP_MRI7_SUMMARY_N;
-run;
-ods tagsets.excelxp options(sheet_name="TOTPAYMENT");
-proc print data=MPUP_MRI7_SUMMARY_TOTPAY;
-run;
-ods tagsets.excelxp options(sheet_name="AVGPAYMENT");
-proc print data=MPUP_MRI7_SUMMARY_AVGPAY;
-run;ods tagsets.excelxp close;
 
 
 /* part d: repeat part b-c using PROC SQL */
